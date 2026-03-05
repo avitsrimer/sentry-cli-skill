@@ -45,10 +45,15 @@ Key fields to extract from JSON:
 
 ### List issues in a project
 ```bash
+sentry issue list <project> --json | jq
+sentry issue list <project> --query "is:unresolved" --json | jq
+sentry issue list <project> --query "is:unresolved" --limit 50 --json | jq
+sentry issue list <project> --sort freq --json | jq
+```
+
+If the project name is ambiguous across orgs, qualify it:
+```bash
 sentry issue list <org>/<project> --json | jq
-sentry issue list <org>/<project> --query "is:unresolved" --json | jq
-sentry issue list <org>/<project> --query "is:unresolved" --limit 50 --json | jq
-sentry issue list <org>/<project> --sort freq --json | jq
 ```
 
 Common search syntax:
@@ -61,23 +66,21 @@ Common search syntax:
 ### View a specific event
 ```bash
 sentry event view <event-id> --json | jq
-sentry event view <org>/<project> <event-id> --json | jq
 ```
 
 ## Trace investigation
 
 ### List recent traces
 ```bash
-sentry trace list <org>/<project> --json | jq
-sentry trace list <org>/<project> --query "transaction:GET /api/users" --json | jq
-sentry trace list <org>/<project> --sort duration --json | jq   # slowest first
-sentry trace list <org>/<project> --limit 50 --json | jq
+sentry trace list <project> --json | jq
+sentry trace list <project> --query "transaction:GET /api/users" --json | jq
+sentry trace list <project> --sort duration --json | jq   # slowest first
+sentry trace list <project> --limit 50 --json | jq
 ```
 
 ### View a specific trace
 ```bash
 sentry trace view <trace-id> --json | jq
-sentry trace view <org>/<project> <trace-id> --json | jq
 ```
 
 ## Output tips
@@ -91,7 +94,7 @@ sentry issue view PROJ-4SM --json | jq '{title: .issue.title, status: .issue.sta
 sentry issue view PROJ-4SM --json | jq '.event.contexts.trace.trace_id'
 
 # List issue titles and IDs
-sentry issue list myorg/myproject --json | jq '.[] | {id: .shortId, title: .title}'
+sentry issue list myproject --json | jq '.[] | {id: .shortId, title: .title}'
 ```
 
 ## Open in browser
